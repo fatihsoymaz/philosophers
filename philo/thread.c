@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:23:33 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 16:01:22 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/12 19:08:25 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,7 @@ int	ft_dead(t_philo *philo)
 	if ((ft_get_time_of_ms() - philo->last_meal) > philo->time2die)
 	{
 		pthread_mutex_unlock(&philo->last);
-		ft_philo_print(philo, "died", 1);
-		pthread_mutex_lock(philo->death);
-		*philo->check_dead = 1;
-		pthread_mutex_unlock(philo->death);
+		ft_philo_print(philo, "died");
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->last);
@@ -75,7 +72,7 @@ void	ft_create_thread(t_philo *philo)
 	{
 		if (pthread_create(&philo[i].thread, NULL, &ft_philo_loop, &philo[i]))
 			return ;
-		usleep(100);
+		usleep(70);
 		i++;
 	}
 	if (philo->num_of_philo > 1)
@@ -115,7 +112,7 @@ void	*ft_philo_loop(void *args)
 			break ;
 		pthread_mutex_unlock(&philo->last);
 		ft_philo_sleep(philo);
-		ft_philo_print(philo, "is thinking", 0);
+		ft_philo_print(philo, "is thinking");
 	}
 	pthread_mutex_unlock(&philo->last);
 	return (NULL);

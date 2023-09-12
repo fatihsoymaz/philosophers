@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:23:18 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 15:59:37 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/12 18:05:16 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	*ft_philo_loop(void *args);
 int		ft_philo_eat(t_philo *philo);
 void	ft_philo_sleep(t_philo *philo);
 void	ft_philo_think(t_philo *philo);
-void	ft_philo_print(t_philo *philo, char *status, int kill);
+void	ft_philo_print(t_philo *philo, char *status);
 int		ft_check_de(t_philo *philo);
 
 #endif
