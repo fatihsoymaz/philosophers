@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:22:49 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 13:14:38 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/12 15:27:03 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ long	ft_atol(const char *str)
 	i = 0;
 	nb = 0;
 	sign = 1;
-	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\n' || str[i] == '\v'
-		|| str[i] == '\f' || str[i] == '\r')
+	while (str[i] == ' ' || (str[i] <= 13 && str[i] >= 9))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
 	{
@@ -65,14 +64,11 @@ long	ft_atol(const char *str)
 	return (nb * sign);
 }
 
-void	ft_arg_init(t_philo *philo, int ac, char **av)
+void	ft_arg_init(t_philo *philo, int ac, char **av, int *check_dead)
 {
-	int	*check_dead;
 	int	i;
 
 	i = 0;
-	check_dead = malloc(sizeof(int));
-	*check_dead = 0;
 	while (i < ft_atol(av[1]))
 	{
 		philo[i].id = i + 1;
@@ -104,10 +100,11 @@ t_time	ft_get_time_of_ms(void)
 	return (time);
 }
 
-void	ft_mutex_init(t_philo *philo, pthread_mutex_t *forks, \
-	pthread_mutex_t *death)
+void	ft_mutex_init(t_philo *philo, pthread_mutex_t *forks,
+		pthread_mutex_t *death)
 {
 	int	i;
+
 	i = 0;
 	while (i < philo->num_of_philo)
 	{
@@ -124,5 +121,4 @@ void	ft_mutex_init(t_philo *philo, pthread_mutex_t *forks, \
 		i++;
 	}
 	pthread_mutex_init(philo->death, NULL);
-
 }

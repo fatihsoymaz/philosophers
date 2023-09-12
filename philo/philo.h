@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:23:18 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 14:57:26 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/12 15:59:37 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,10 @@ long	ft_atol(const char *str);
 t_time	ft_get_time_of_ms(void);
 void	ft_mutex_init(t_philo *philo, pthread_mutex_t *forks, \
 			pthread_mutex_t *death);
-void	ft_arg_init(t_philo *philo, int ac, char **av);
+void	ft_arg_init(t_philo *philo, int ac, char **av, int *a);
 void	ft_create_thread(t_philo *philo);
 void	*ft_philo_loop(void *args);
-void	ft_philo_eat(t_philo *philo);
+int		ft_philo_eat(t_philo *philo);
 void	ft_philo_sleep(t_philo *philo);
 void	ft_philo_think(t_philo *philo);
 void	ft_philo_print(t_philo *philo, char *status, int kill);

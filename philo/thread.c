@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:23:33 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 15:00:39 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/12 16:01:22 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,9 @@ int	ft_check_de(t_philo *philo)
 	int	j;
 	int	result;
 
-	//t_time	time;
 	i = 0;
 	j = 0;
 	result = 0;
-
 	while (i < philo->num_of_philo)
 	{
 		if (ft_dead(&philo[i]) || ft_finish_serving(&philo[i], &j, &result))
@@ -101,53 +99,24 @@ void	*ft_philo_loop(void *args)
 	t_philo	*philo;
 
 	philo = (t_philo *)args;
-	if (philo->num_of_philo == 1)
+	while (1)
 	{
-		if (pthread_mutex_lock(philo->left_fork))
-			return (NULL);
-		ft_philo_print(philo, " has taken a fork", 0);
-		usleep(philo->time2die * 1000);
-		ft_philo_print(philo, "died", 1);
-		pthread_mutex_unlock(philo->left_fork);
-	}
-	else
-	{
-		while (1)
+		pthread_mutex_lock(philo->death);
+		if (*philo->check_dead)
 		{
-			pthread_mutex_lock(philo->death);
-			if (*philo->check_dead)
-			{
-				pthread_mutex_unlock(philo->death);
-				break ;
-			}
 			pthread_mutex_unlock(philo->death);
-			ft_philo_eat(philo);
-			pthread_mutex_lock(&philo->last);
-			if (philo->total_eaten == philo->must_eat)
-				break ;
-			pthread_mutex_unlock(&philo->last);
-			ft_philo_sleep(philo);
-			ft_philo_print(philo, "is thinking", 0);
+			break ;
 		}
+		pthread_mutex_unlock(philo->death);
+		if (ft_philo_eat(philo))
+			break ;
+		pthread_mutex_lock(&philo->last);
+		if (philo->total_eaten == philo->must_eat)
+			break ;
 		pthread_mutex_unlock(&philo->last);
-
+		ft_philo_sleep(philo);
+		ft_philo_print(philo, "is thinking", 0);
 	}
+	pthread_mutex_unlock(&philo->last);
 	return (NULL);
-}
-
-int	ft_check_death(t_philo *philo)
-{
-	if (*philo->check_dead)
-	{
-		pthread_mutex_unlock(philo->death);
-		return (1);
-	}
-	if (ft_get_time_of_ms() - philo->last_meal >
-		philo->time2die)
-	{
-		ft_philo_print(philo, "died", 1);
-		pthread_mutex_unlock(philo->death);
-		return (1);
-	}
-	return (0);
 }
