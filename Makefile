@@ -1,27 +1,20 @@
 NAME = philo
 
-SRCS = main.c utils.c philo_control.c
-
+SRCS= main.c philo_init.c philo.c thread.c 
 OBJS = $(SRCS:.c=.o)
-
 CC = gcc
-
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread -g
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(MAKE) -C ./libft
-	$(CC) $(CFLAGS) $(OBJS) ./libft/libft.a -o $(NAME)
-
+	$(CC) -o $(NAME) $(OBJS) $(CFLAGS)
 clean:
-	@rm -rf $(OBJS)
-	@${MAKE} -C ./libft clean
+	rm -f $(OBJS)
 
-fclean: clean
-	@rm -rf $(NAME)
-	@${MAKE} -C ./libft fclean
+fclean:clean
+	rm -f $(NAME)
 
-re: fclean all
+re: clean all
 
-.PHONY: all clean fclean re
+.PHONY : all clean fclean re 
