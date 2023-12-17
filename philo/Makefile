@@ -3,7 +3,7 @@ NAME = philo
 SRCS= main.c philo_init.c philo.c thread.c 
 OBJS = $(SRCS:.c=.o)
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread -g
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 

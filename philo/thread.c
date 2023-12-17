@@ -6,32 +6,27 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:23:33 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 19:08:25 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/17 21:21:37 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_dead(t_philo *philo)
+int	ft_is_dead(t_philo *philo)
 {
-	int	i;
-
-	i = 0;
 	pthread_mutex_lock(&philo->last);
 	if ((ft_get_time_of_ms() - philo->last_meal) > philo->time2die)
 	{
 		pthread_mutex_unlock(&philo->last);
-		ft_philo_print(philo, "died");
+		ft_philo_print(philo, "is died");
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->last);
 	return (0);
 }
 
-int	ft_finish_serving(t_philo *philo, int *j, int *result)
+int	ft_is_served(t_philo *philo)
 {
-	(void)result;
-	(void)j;
 	if (philo->must_eat != -1)
 	{
 		pthread_mutex_lock(&philo->total);
@@ -45,18 +40,14 @@ int	ft_finish_serving(t_philo *philo, int *j, int *result)
 	return (0);
 }
 
-int	ft_check_de(t_philo *philo)
+int	ft_check_death(t_philo *philo)
 {
 	int	i;
-	int	j;
-	int	result;
 
 	i = 0;
-	j = 0;
-	result = 0;
 	while (i < philo->num_of_philo)
 	{
-		if (ft_dead(&philo[i]) || ft_finish_serving(&philo[i], &j, &result))
+		if (ft_is_dead(&philo[i]) || ft_is_served(&philo[i]))
 			return (1);
 		i++;
 	}
@@ -70,18 +61,15 @@ void	ft_create_thread(t_philo *philo)
 	i = 0;
 	while (i < philo->num_of_philo)
 	{
-		if (pthread_create(&philo[i].thread, NULL, &ft_philo_loop, &philo[i]))
+		if (pthread_create(&philo[i].thread, NULL, routine, &philo[i]))
 			return ;
-		usleep(70);
+		usleep(50);
 		i++;
 	}
-	if (philo->num_of_philo > 1)
+	while (1)
 	{
-		while (1)
-		{
-			if (ft_check_de(philo))
-				break ;
-		}
+		if (ft_check_death(philo))
+			break ;
 	}
 	i = 0;
 	while (i < philo->num_of_philo)
@@ -91,7 +79,7 @@ void	ft_create_thread(t_philo *philo)
 	}
 }
 
-void	*ft_philo_loop(void *args)
+void	*routine(void *args)
 {
 	t_philo	*philo;
 

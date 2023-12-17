@@ -6,7 +6,7 @@
 /*   By: fsoymaz <fsoymaz@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 11:22:49 by fsoymaz           #+#    #+#             */
-/*   Updated: 2023/09/12 15:27:03 by fsoymaz          ###   ########.fr       */
+/*   Updated: 2023/09/14 23:56:19 by fsoymaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,6 @@ int	ft_arg_check(int ac, char **av)
 			{
 				if (!(av[i][j] >= '0' && av[i][j] <= '9'))
 					return (0);
-				if (av[1][0] == '0')
-					return (0);
 				j++;
 			}
 			i++;
@@ -39,37 +37,40 @@ int	ft_arg_check(int ac, char **av)
 	return (1);
 }
 
-long	ft_atol(const char *str)
+int	ft_atol(char *str)
 {
-	int		i;
-	long	nb;
-	int		sign;
+	long	i;
+	long	sign;
+	long	result;
 
 	i = 0;
-	nb = 0;
 	sign = 1;
-	while (str[i] == ' ' || (str[i] <= 13 && str[i] >= 9))
+	result = 0;
+	while (str[i] == 32 || (str[i] <= 13 && str[i] >= 9))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
 	{
 		if (str[i] == '-')
-			sign = -1;
+			sign *= -1;
 		i++;
 	}
-	while (str[i] >= '0' && str[i] <= '9')
+	while (str[i] <= '9' && str[i] >= '0')
 	{
-		nb = nb * 10 + str[i] - '0';
-		i++;
+		result = result * 10 + (str[i++] - '0');
+		if (result > 2147483648)
+			return (-1);
 	}
-	return (nb * sign);
+	if ((result * sign) == 2147483648)
+		return (-1);
+	return ((int)result * sign);
 }
 
-void	ft_arg_init(t_philo *philo, int ac, char **av, int *check_dead)
+int	ft_arg_init(t_philo *philo, int ac, char **av, int *check_dead)
 {
 	int	i;
 
-	i = 0;
-	while (i < ft_atol(av[1]))
+	i = -1;
+	while (++i < ft_atol(av[1]))
 	{
 		philo[i].id = i + 1;
 		philo[i].num_of_philo = ft_atol(av[1]);
@@ -80,14 +81,17 @@ void	ft_arg_init(t_philo *philo, int ac, char **av, int *check_dead)
 			philo[i].must_eat = ft_atol(av[5]);
 		else
 			philo[i].must_eat = -1;
+		if (!philo[i].time2die || !philo[i].time2eat || !philo[i].time2sleep
+			|| !philo[i].must_eat)
+			return (1);
 		philo[i].last_meal = ft_get_time_of_ms();
 		philo[i].start_time = ft_get_time_of_ms();
 		philo[i].total_eaten = 0;
 		philo[i].check_dead = check_dead;
 		pthread_mutex_init(&philo[i].last, NULL);
 		pthread_mutex_init(&philo[i].total, NULL);
-		i++;
 	}
+	return (0);
 }
 
 t_time	ft_get_time_of_ms(void)
@@ -110,13 +114,7 @@ void	ft_mutex_init(t_philo *philo, pthread_mutex_t *forks,
 	{
 		philo[i].left_fork = &forks[i];
 		philo[i].right_fork = &forks[(i + 1) % philo->num_of_philo];
-		i++;
-	}
-	i = 0;
-	while (i < philo->num_of_philo)
-	{
-		pthread_mutex_init(philo[i].left_fork, NULL);
-		pthread_mutex_init(philo[i].right_fork, NULL);
+		pthread_mutex_init(&forks[i], NULL);
 		philo[i].death = death;
 		i++;
 	}
